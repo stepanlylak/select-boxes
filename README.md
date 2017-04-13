@@ -50,6 +50,6 @@ Template.Your_template.helpers({
     }
 });
 
-//or get data from element
+//get data from element
 const selected = Blaze.getView(document.getElementsByClassName('.select-boxes')[0])._templateInstance.active.curValue
 ```
