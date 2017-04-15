@@ -1,6 +1,6 @@
 # MeteorJs SelectBoxes
 
-These are the reactive select boxes for meteor
+These are the reactive select boxes for meteor ([example](http://packages.lylak.in.ua/select-boxes))
 
 ```bash
 $ meteor add lylak:select-boxes
