@@ -1,12 +1,12 @@
 <template name='Select_boxes'>
     <div class="select-box {{className}}">
         <div class="select-box-btn">
-            {{#if active.marker}}<span class="es-marker" style="background-color:{{active.marker}}"></span>{{/if}}
-            <span>{{active.txt}}</span>
+            {{#if _active.marker}}<span class="es-marker" style="background-color:{{_active.marker}}"></span>{{/if}}
+            <span>{{_active.txt}}</span>
         </div>
         <div class="select-box-options">
-            {{#each options}}
-            <div class="{{activeCheck}}">
+            {{#each _options}}
+            <div class="{{_activeCheck}}">
                 {{#if marker}}<span class="select-box-marker" style="background-color:{{marker}}"></span>{{/if}}
                 <span>{{txt}}</span>
             </div>

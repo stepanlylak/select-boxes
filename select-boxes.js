@@ -2,19 +2,38 @@ import { Meteor } from 'meteor/meteor';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 import { ReactiveVar } from 'meteor/reactive-var';
-    
+
 import './select-boxes.html';
 
 Template.Select_boxes.onCreated(function(){
     this.active = new ReactiveVar( false );
-    
+    this.options = new ReactiveVar( false );
+
     this.setActive = data => {
         this.active.set(data);
         if(this.data.onChange && _.isFunction(this.data.onChange)) {
             this.data.onChange.call(this.active.get());
         }
     };
-    
+
+    this.autorun(() => {
+        const cd = Template.currentData();
+        if(cd && cd.options && !_.isNull(cd.options)) {
+            if(!cd.txtKey) cd.txtKey = 'txt';
+            if(!cd.valKey) cd.valKey = 'val';
+            this.options.set(_.map((cd.ignor ? _.filter(cd.options, v => !v[cd.ignor]) : cd.options), (v,k) => {
+                const obj = {val: v[cd.valKey], txt: v[cd.txtKey]};
+                if(cd.marker) obj.marker = v[cd.marker];
+                return obj;
+            }));
+            if(!this.active.get()) this.active.set(this.options.get()[0]);
+            if(cd.currentVal != this.prevVal) {
+                this.active.set(_.findWhere(this.options.get(), {val: cd.currentVal}));
+                this.prevVal = cd.currentVal;
+            }
+        }
+    });
+
     $(document).on('click', function(event) {
         if (!$(event.target).closest('.select-box.opened').length) {
             $('.select-box').removeClass('opened post-top pos-bottom');
@@ -23,33 +42,15 @@ Template.Select_boxes.onCreated(function(){
 });
 
 Template.Select_boxes.helpers({
-    options() {
-        const t = Template.instance(), active = t.active.get(), conf = t.data;
-        if(!conf || (!conf.options && !_.isNull(conf.options))) return null;
-        let init = false;
-        if(!conf.txtKey) conf.txtKey = 'txt';
-        if(!conf.valKey) conf.valKey = 'val';
-        
-        if(!t.back && conf.currentVal ) {
-            init = true;
-            t.back = _.clone(conf.currentVal);
-        }
-
-        return _.map((conf.ignor ? _.filter(conf.options, v => !v[conf.ignor]) : conf.options), (v,k) => {
-            var obj = {'val': v[conf.valKey], 'txt': v[conf.txtKey], active: conf.currentVal == v[conf.valKey] || v[conf.valKey] == active.val};
-            if(conf.marker) obj.marker = v[conf.marker];
-            if(init || (conf.currentVal != t.back && conf.currentVal == v[conf.valKey]) || (!active && k == 0)) {
-                t.active.set(obj);
-                t.back = _.clone(conf.currentVal);
-                init = false;
-            }
-            return obj;
-        });
+    _options() {
+        const t = Template.instance();
+        return t.options.get();
     },
-    active() {
-        return Template.instance().active.get();
+    _active() {
+        const t = Template.instance();
+        return t.active.get();
     },
-    activeCheck() {
+    _activeCheck() {
         const t = Template.instance(), active = t.active.get();
         return this.val == active.val && 'active';
     }

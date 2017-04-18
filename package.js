@@ -1,6 +1,6 @@
 Package.describe({
     name: 'lylak:select-boxes',
-    version: '1.0.2',
+    version: '1.1.0',
     summary: 'These are the reactive select boxes for meteor',
     git: '',
     documentation: 'README.md'
